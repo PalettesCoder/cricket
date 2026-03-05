@@ -1,0 +1,1 @@
+window.figmaNotify=function(t){let e=document.querySelector(".figma-notification");e||(e=document.createElement("div"),e.className="figma-notification",document.body.appendChild(e)),e.textContent=t,e.classList.add("show"),setTimeout(()=>{e.classList.remove("show")},3e3)};
