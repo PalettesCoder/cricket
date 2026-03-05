@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using HRCricket.Api.Models;
+using HRCricket.Api.Data;
 
 namespace HRCricket.Api.Controllers
 {
@@ -20,58 +21,97 @@ namespace HRCricket.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Player>>> GetPlayers()
+        public async Task<ActionResult> GetPlayers()
         {
-            return await _context.Players.ToListAsync();
+            try
+            {
+                var players = await _context.Players.ToListAsync();
+                return Ok(players);
+            }
+            catch (Exception)
+            {
+                return Ok(new List<object>()); 
+            }
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Player>> GetPlayer(int id)
+        public async Task<ActionResult> GetPlayer(int id)
         {
-            var player = await _context.Players.FindAsync(id);
-            if (player == null) return NotFound();
-            return player;
+            try
+            {
+                var player = await _context.Players.FindAsync(id);
+                if (player == null) return NotFound(new { message = "Player not found" });
+                return Ok(player);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Database Error", details = ex.Message });
+            }
         }
 
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<Player>>> SearchPlayers(string name)
+        public async Task<ActionResult> SearchPlayers(string name)
         {
-            return await _context.Players
-                .Where(p => p.Name.Contains(name))
-                .ToListAsync();
+            try
+            {
+                var players = await _context.Players
+                    .Where(p => p.Name.Contains(name))
+                    .ToListAsync();
+                return Ok(players);
+            }
+            catch (Exception)
+            {
+                return Ok(new List<object>());
+            }
         }
 
         [HttpGet("search-api")]
-        public async Task<ActionResult<IEnumerable<CricApiPlayer>>> SearchApiPlayers(string name)
+        public async Task<ActionResult> SearchApiPlayers(string name)
         {
-            var client = _httpClientFactory.CreateClient();
-            var url = $"https://api.cricapi.com/v1/players?apikey={_apiKey}&offset=0&search={name}";
-            
-            var response = await client.GetAsync(url);
-            if (!response.IsSuccessStatusCode) return BadRequest("External API error");
-
-            var json = await response.Content.ReadAsStringAsync();
-            var apiResponse = JsonSerializer.Deserialize<CricApiPlayerResponse>(json);
-
-            if (apiResponse?.Data != null)
+            try
             {
-                // Auto-import new players into local DB
-                foreach (var p in apiResponse.Data)
-                {
-                    if (!await _context.Players.AnyAsync(lp => lp.Name == p.Name))
-                    {
-                        _context.Players.Add(new Player { 
-                            Name = p.Name ?? "Unknown", 
-                            Team = p.Country ?? "TBD",
-                            Role = "Player"
-                        });
-                    }
-                }
-                await _context.SaveChangesAsync();
-                return Ok(apiResponse.Data);
-            }
+                var client = _httpClientFactory.CreateClient();
+                var url = $"https://api.cricapi.com/v1/players?apikey={_apiKey}&offset=0&search={name}";
+                
+                var response = await client.GetAsync(url);
+                if (!response.IsSuccessStatusCode) return BadRequest(new { error = "External API error" });
 
-            return Ok(new List<CricApiPlayer>());
+                var json = await response.Content.ReadAsStringAsync();
+                var apiResponse = JsonSerializer.Deserialize<CricApiPlayerResponse>(json);
+
+                if (apiResponse?.Data != null)
+                {
+                    // Auto-import new players into local DB (wrapped in its own try-catch or handled carefully)
+                    try 
+                    {
+                        foreach (var p in apiResponse.Data)
+                        {
+                            if (!await _context.Players.AnyAsync(lp => lp.Name == p.Name))
+                            {
+                                _context.Players.Add(new Player { 
+                                    Name = p.Name ?? "Unknown", 
+                                    Team = p.Country ?? "TBD",
+                                    Role = "Player"
+                                });
+                            }
+                        }
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception dbEx)
+                    {
+                        // Log DB error but still return API data
+                        Console.WriteLine($"Failed to auto-import players: {dbEx.Message}");
+                    }
+                    
+                    return Ok(apiResponse.Data);
+                }
+
+                return Ok(new List<CricApiPlayer>());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Internal Server Error", details = ex.Message });
+            }
         }
     }
 }

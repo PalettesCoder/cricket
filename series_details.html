@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Series Details | HR Cricket</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/trophy.svg">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <style>
+        :root {
+            --primary: #DE1F26;
+            --primary-dark: #B9141B;
+            --bg: #F4F7F9;
+            --card: #FFFFFF;
+            --text-dark: #121212;
+            --text-gray: #5F6D7A;
+            --border: #E8EDF1;
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-dark); }
+
+        .top-nav {
+            background: #FFFFFF;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .detail-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .series-header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 40px;
+        }
+
+        .series-label {
+            background: var(--text-dark);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .series-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .series-meta {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .match-list {
+            margin-top: 40px;
+        }
+
+        .match-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            transition: 0.2s;
+        }
+
+        .match-item:hover {
+            background: #F8FAFC;
+        }
+
+        .match-item:last-child { border-bottom: none; }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .fixture-date {
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .fixture-name {
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header class="top-nav">
+        <a href="schedule.html" class="logo">
+            <i class="ph-fill ph-baseball"></i>
+            HR CRICKET
+        </a>
+    </header>
+
+    <div class="container">
+        <a href="schedule.html" class="btn-back">
+            <i class="ph ph-arrow-left"></i> BACK TO SCHEDULE
+        </a>
+
+        <div class="detail-card" id="series-details">
+            <div style="text-align: center; padding: 100px;">
+                <i class="ph ph-circle-notch ph-spin" style="font-size: 40px; color: var(--primary);"></i>
+                <p style="margin-top: 20px; color: var(--text-gray);">Loading series info...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        async function loadSeriesDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const seriesId = urlParams.get('id');
+            
+            if (!seriesId) {
+                document.getElementById('series-details').innerHTML = '<h2>No series ID specified.</h2>';
+                return;
+            }
+
+            try {
+                const data = await CricketAPI.getSeriesInfo(seriesId);
+                const container = document.getElementById('series-details');
+                
+                if (data && data.info) {
+                    let matchListHtml = '';
+                    if (data.matchList) {
+                        data.matchList.forEach(m => {
+                            matchListHtml += `
+                                <div class="match-item">
+                                    <div>
+                                        <div class="fixture-date">${m.date}</div>
+                                        <div class="fixture-name">${m.name}</div>
+                                    </div>
+                                    <i class="ph ph-calendar-check" style="color: var(--primary); font-size: 20px;"></i>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    container.innerHTML = `
+                        <div class="series-header">
+                            <span class="series-label">TOURNAMENT HUB</span>
+                            <h1 class="series-name">${data.info.name}</h1>
+                            <div class="series-meta">
+                                ${data.info.matches} Matches (${data.info.t20} T20s, ${data.info.odi} ODIs, ${data.info.test} Tests)
+                            </div>
+                        </div>
+
+                        <div class="match-list">
+                            <h3 style="margin-bottom: 20px; font-family: 'Outfit'; border-bottom: 2px solid var(--primary); display: inline-block;">All Fixtures</h3>
+                            <div style="border: 1px solid var(--border); border-radius: 12px; overflow: hidden;">
+                                ${matchListHtml || '<p style="padding: 20px; text-align: center; color: var(--text-gray);">No fixtures found for this series.</p>'}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = '<h2>Failed to load series data.</h2>';
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('series-details').innerHTML = '<h2>Error connecting to API.</h2>';
+            }
+        }
+
+        window.onload = loadSeriesDetails;
+    </script>
+</body>
+</html>

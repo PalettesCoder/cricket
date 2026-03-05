@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News & Blogs | HR Cricket</title>
+    <title>News & Blogs | Cricket Hub</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/trophy.svg">
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -152,7 +153,7 @@
             font-size: 40px;
             color: var(--primary);
             opacity: 0.8;
-            background-image: url('https://harsharoyal.in/images/cricket-analysis.jpg');
+            background-image: url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&q=80&w=1200');
             background-size: cover;
             background-position: center;
         }
@@ -260,9 +261,9 @@
 <body>
 
     <header class="top-nav">
-        <a href="index.html" class="logo">
+        <a href="schedule.html" class="logo">
             <i class="ph-fill ph-baseball"></i>
-            HR CRICKET
+            CRICKET HUB
         </a>
         <nav class="main-nav-links">
             <a href="schedule.html" class="nav-link">Schedule</a>
@@ -286,17 +287,17 @@
             <div class="category-tab">Technical Review</div>
         </div>
 
-        <!-- Featured Post -->
-        <div class="featured-post">
-            <div class="featured-img" style="background-image: url('https://harsharoyal.in/images/bazball-analysis.jpg');"></div>
+        <!-- Featured Post (Dynamic) -->
+        <div class="featured-post" id="featured-blog" style="display: none;">
+            <div id="featured-img" class="featured-img" style="background-image: url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&q=80&w=1200');"></div>
             <div class="featured-content">
-                <span class="post-label">FEATURED ANALYSIS</span>
-                <h2 class="featured-title">Decoding the Impact of 'Bazball' on Test Longevity</h2>
-                <p class="post-excerpt">Is England's aggressive approach a flash in the pan or a fundamental shift in how five-day cricket is played? We look at the numbers.</p>
+                <span id="featured-category" class="post-label">FEATURED ANALYSIS</span>
+                <h2 id="featured-title" class="featured-title">...</h2>
+                <p id="featured-excerpt" class="post-excerpt">...</p>
                 <div class="post-meta">
-                    <span>March 05, 2026</span>
+                    <span id="featured-date">...</span>
                     <span>•</span>
-                    <span>12 Min Read</span>
+                    <span id="featured-time">...</span>
                 </div>
                 <a href="#" class="btn-read" style="margin-top: 25px;">READ FULL STORY <i class="ph ph-arrow-right"></i></a>
             </div>
@@ -314,16 +315,29 @@
     <script src="js/api.js"></script>
     <script>
         async function loadBlogs() {
-            const container = document.getElementById('blog-grid');
+            const grid = document.getElementById('blog-grid');
             const blogs = await CricketAPI.getBlogs();
             
-            if (blogs.length > 0) {
-                container.innerHTML = '';
-                blogs.forEach(post => {
+            if (blogs && blogs.length > 0) {
+                // Populate Featured
+                const featured = blogs[0];
+                document.getElementById('featured-blog').style.display = 'grid';
+                document.getElementById('featured-title').innerText = featured.title;
+                document.getElementById('featured-excerpt').innerText = featured.excerpt;
+                document.getElementById('featured-category').innerText = featured.category || 'ANALYSIS';
+                document.getElementById('featured-date').innerText = new Date(featured.createdAt).toLocaleDateString();
+                document.getElementById('featured-time').innerText = `${featured.readingTime} Min Read`;
+                if (featured.imageUrl) {
+                    document.getElementById('featured-img').style.backgroundImage = `url(${featured.imageUrl})`;
+                }
+
+                // Populate Grid (Remaining blogs)
+                grid.innerHTML = '';
+                blogs.slice(1).forEach(post => {
                     const card = document.createElement('article');
                     card.className = 'blog-card';
                     card.innerHTML = `
-                        <div class="card-img" style="background-image: url('${post.imageUrl || 'https://harsharoyal.in/images/cricket-analysis.jpg'}');"></div>
+                        <div class="card-img" style="background-image: url('${post.imageUrl || 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&q=80&w=800'}');"></div>
                         <div class="card-body">
                             <span class="post-label">${post.category || 'ANALYSIS'}</span>
                             <h3 class="card-title">${post.title}</h3>
@@ -335,10 +349,10 @@
                             </div>
                         </div>
                     `;
-                    container.appendChild(card);
+                    grid.appendChild(card);
                 });
             } else {
-                container.innerHTML = '<div class="blog-card" style="padding: 40px; text-align: center;"><p style="color: var(--text-gray);">No insights found in the archive yet.</p></div>';
+                grid.innerHTML = '<div class="blog-card" style="padding: 40px; text-align: center;"><p style="color: var(--text-gray);">Working under progress. No data available at the moment.</p></div>';
             }
         }
 

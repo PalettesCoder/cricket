@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cricket Schedule | HR Cricket</title>
+    <title>Schedule | Cricket Hub</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/trophy.svg">
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -237,14 +238,65 @@
             }
             .main-nav-links { display: none; }
         }
+
+        /* Full Page Loader */
+        #page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.4s ease, visibility 0.4s;
+        }
+
+        #page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
 
+    <div id="page-loader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">Loading Schedule...</div>
+    </div>
+
     <header class="top-nav">
-        <a href="index.html" class="logo">
+        <a href="schedule.html" class="logo">
             <i class="ph-fill ph-baseball"></i>
-            HR CRICKET
+            CRICKET HUB
         </a>
         <nav class="main-nav-links">
             <a href="schedule.html" class="nav-link active">Schedule</a>
@@ -282,76 +334,58 @@
     <script>
         async function loadSchedule() {
             const container = document.getElementById('schedule-container');
-            const schedules = await CricketAPI.getUpcomingSchedules();
+            const loader = document.getElementById('page-loader');
             
-            if (schedules.length > 0) {
-                container.innerHTML = '';
+            try {
+                const schedules = await CricketAPI.getUpcomingSchedules();
                 
-                // Group by date
-                const groups = schedules.reduce((acc, match) => {
-                    const date = new Date(match.matchTime).toLocaleDateString(undefined, {
-                        weekday: 'long', day: '2-digit', month: 'long'
-                    });
-                    if (!acc[date]) acc[date] = [];
-                    acc[date].push(match);
-                    return acc;
-                }, {});
-
-                Object.keys(groups).forEach(date => {
-                    const groupDiv = document.createElement('div');
-                    groupDiv.className = 'schedule-group';
-                    groupDiv.innerHTML = `<div class="group-date">${date}</div>`;
+                if (schedules && schedules.length > 0) {
+                    container.innerHTML = '';
                     
-                    groups[date].forEach(match => {
-                        const time = new Date(match.matchTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-                        const card = document.createElement('a');
-                        card.href = '#';
-                        card.className = 'schedule-card';
-                        card.innerHTML = `
-                            <div class="match-time">${time}</div>
-                            <div class="match-details">
-                                <div class="match-name">${match.matchName}</div>
-                                <div class="series-name">${match.series} • ${match.category}</div>
-                                <div class="match-venue">${match.venue}</div>
-                            </div>
-                            <div class="match-actions">
-                                <button class="btn-remind" onclick="showSeriesModal('${match.apiId || 'd7dcef2e-6391-4039-b7b1-15fd3e354432'}'); return false;">
-                                    <i class="ph ph-exam"></i> Series Details
-                                </button>
-                            </div>
-                        `;
-                        groupDiv.appendChild(card);
-                    });
-                    container.appendChild(groupDiv);
-                });
-            } else {
-                container.innerHTML = '<div class="schedule-group"><p style="text-align:center; color: var(--text-gray);">No upcoming matches found in the database.</p></div>';
-            }
-        }
+                    // Group by date
+                    const groups = schedules.reduce((acc, match) => {
+                        const date = new Date(match.matchTime).toLocaleDateString(undefined, {
+                            weekday: 'long', day: '2-digit', month: 'long'
+                        });
+                        if (!acc[date]) acc[date] = [];
+                        acc[date].push(match);
+                        return acc;
+                    }, {});
 
-        async function showSeriesModal(apiId) {
-            const modal = document.getElementById('series-modal');
-            modal.style.display = 'flex';
-            
-            document.getElementById('modal-series-name').innerText = "Loading Series Data...";
-            document.getElementById('modal-series-meta').innerText = "";
-            document.getElementById('modal-series-matches').innerHTML = "";
-            
-            const data = await CricketAPI.getSeriesInfo(apiId);
-            
-            if (data && data.info) {
-                document.getElementById('modal-series-name').innerText = data.info.name;
-                document.getElementById('modal-series-meta').innerText = `${data.info.matches} Matches (${data.info.t20} T20s, ${data.info.odi} ODIs, ${data.info.test} Tests)`;
-                
-                const list = document.getElementById('modal-series-matches');
-                list.innerHTML = "";
-                if (data.matchList) {
-                    data.matchList.forEach(m => {
-                        list.innerHTML += `<div style="padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px;"><strong>${m.name}</strong> • ${m.date}</div>`;
+                    Object.keys(groups).forEach(date => {
+                        const groupDiv = document.createElement('div');
+                        groupDiv.className = 'schedule-group';
+                        groupDiv.innerHTML = `<div class="group-date">${date}</div>`;
+                        
+                        groups[date].forEach(match => {
+                            const time = new Date(match.matchTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+                            const card = document.createElement('div');
+                            card.className = 'schedule-card';
+                            card.innerHTML = `
+                                <div class="match-time">${time}</div>
+                                <div class="match-details">
+                                    <div class="match-name">${match.matchName}</div>
+                                    <div class="series-name">${match.series} • ${match.category}</div>
+                                    <div class="match-venue">${match.venue}</div>
+                                </div>
+                                <div class="match-actions">
+                                    <a href="series_details.html?id=${match.apiId}" class="btn-remind" style="text-decoration: none;">
+                                        <i class="ph ph-exam"></i> Series Details
+                                    </a>
+                                </div>
+                            `;
+                            groupDiv.appendChild(card);
+                        });
+                        container.appendChild(groupDiv);
                     });
+                } else {
+                    container.innerHTML = '<div class="schedule-group"><p style="text-align:center; padding: 40px; color: var(--text-gray);">Working under progress. No upcoming matches found in the global calendar.</p></div>';
                 }
-            } else {
-                document.getElementById('modal-series-name').innerText = "Failed to load series info.";
+            } catch (err) {
+                console.error("Schedule load error:", err);
+                container.innerHTML = '<div class="schedule-group"><p style="text-align:center; padding: 40px; color: var(--text-gray);">Working under progress. Unable to fetch calendar.</p></div>';
+            } finally {
+                loader.classList.add('hidden');
             }
         }
 
@@ -364,24 +398,5 @@
 
         document.addEventListener('DOMContentLoaded', loadSchedule);
     </script>
-    
-    <!-- Series Info Modal -->
-    <div id="series-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center;">
-        <div style="background: white; border-radius: 12px; width: 90%; max-width: 600px; padding: 30px; position: relative;">
-            <button onclick="document.getElementById('series-modal').style.display='none'" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
-            <span style="background: var(--text-dark); color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold;">TOURNAMENT HUB</span>
-            <h2 id="modal-series-name" style="margin-top: 15px; font-size: 24px; font-weight: 800; line-height: 1.2;">...</h2>
-            <div id="modal-series-meta" style="margin-top: 10px; color: var(--primary); font-size: 14px; font-weight: 700;">
-                ...
-            </div>
-            
-            <div style="margin-top: 25px;">
-                <h3 style="font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid var(--primary); display: inline-block;">All Fixtures</h3>
-                <div id="modal-series-matches" style="max-height: 200px; overflow-y: auto;">
-                    <!-- Injected matched -->
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 </html>

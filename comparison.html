@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Player Comparison & Stats | HR Analysis</title>
+    <title>Player Comparison & Stats | Cricket Hub</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/trophy.svg">
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -225,14 +226,65 @@
             .top-nav { padding: 0 20px; }
             .main-nav-links { display: none; }
         }
+
+        /* Full Page Loader */
+        #page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.4s ease, visibility 0.4s;
+        }
+
+        #page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
 
+    <div id="page-loader" class="hidden">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">Analyzing Player Data...</div>
+    </div>
+
     <header class="top-nav">
-        <a href="index.html" class="logo">
+        <a href="schedule.html" class="logo">
             <i class="ph-fill ph-baseball"></i>
-            HR CRICKET
+            CRICKET HUB
         </a>
         <nav class="main-nav-links">
             <a href="schedule.html" class="nav-link">Schedule</a>
@@ -254,104 +306,111 @@
             <input type="text" id="player2-search" class="search-input" placeholder="Search Player 2 (e.g. Steve Smith)">
         </div>
 
-        <div class="comparison-board">
+        <div class="comparison-board" id="comparison-board">
             <!-- Player 1 -->
             <div class="player-card" id="player1-card">
-                <div class="player-img">VK</div>
-                <div class="player-name">Virat Kohli</div>
-                <div class="player-team">INDIA • BATSMAN</div>
+                <div class="player-img">?</div>
+                <div class="player-name">Select Player 1</div>
+                <div class="player-team">SEARCH ABOVE</div>
             </div>
 
             <!-- Player 2 -->
             <div class="player-card" id="player2-card">
-                <div class="player-img" style="background: #FFF5F5; color: #E53E3E;">SS</div>
-                <div class="player-name">Steve Smith</div>
-                <div class="player-team">AUSTRALIA • BATSMAN</div>
+                <div class="player-img" style="background: #FFF5F5; color: #E53E3E;">?</div>
+                <div class="player-name">Select Player 2</div>
+                <div class="player-team">SEARCH ABOVE</div>
             </div>
         </div>
 
         <div class="stats-table-container">
             <div class="stats-row stats-header">
-                <div class="stats-cell stats-label">Metric (Test Format)</div>
-                <div class="stats-cell">Kohli</div>
-                <div class="stats-cell">Smith</div>
+                <div class="stats-cell stats-label">Performance Metric</div>
+                <div id="p1-header" class="stats-cell">Player 1</div>
+                <div id="p2-header" class="stats-cell">Player 2</div>
             </div>
             
-            <div class="stats-row">
-                <div class="stats-cell stats-label">Matches</div>
-                <div class="stats-cell stats-val">113</div>
-                <div class="stats-cell stats-val">109</div>
-            </div>
-
-            <div class="stats-row">
-                <div class="stats-cell stats-label">Innings</div>
-                <div class="stats-cell stats-val">191</div>
-                <div class="stats-cell stats-val">193</div>
-            </div>
-
-            <div class="stats-row">
-                <div class="stats-cell stats-label">Total Runs</div>
-                <div class="stats-cell stats-val">8,848</div>
-                <div class="stats-cell stats-val higher">9,685</div>
-            </div>
-
-            <div class="stats-row">
-                <div class="stats-cell stats-label">Batting Average</div>
-                <div class="stats-cell stats-val">49.15</div>
-                <div class="stats-cell stats-val higher">56.97</div>
-            </div>
-
-            <div class="stats-row">
-                <div class="stats-cell stats-label">100s / 50s</div>
-                <div class="stats-cell stats-val">29 / 30</div>
-                <div class="stats-cell stats-val higher">32 / 41</div>
-            </div>
-
-            <div class="stats-row">
-                <div class="stats-cell stats-label">High Score</div>
-                <div class="stats-cell stats-val higher">254*</div>
-                <div class="stats-cell stats-val">239</div>
-            </div>
-
-            <div class="stats-row">
-                <div class="stats-cell stats-label">Strike Rate</div>
-                <div class="stats-cell stats-val higher">55.5</div>
-                <div class="stats-cell stats-val">53.2</div>
+            <div id="dynamic-stats-rows">
+                <div class="stats-row">
+                    <div class="stats-cell stats-label">Matches</div>
+                    <div id="p1-matches" class="stats-cell stats-val">-</div>
+                    <div id="p2-matches" class="stats-cell stats-val">-</div>
+                </div>
+                <!-- More rows will be updated via JS -->
+                 <div class="stats-row">
+                    <div class="stats-cell stats-label">Total Runs</div>
+                    <div id="p1-runs" class="stats-cell stats-val">-</div>
+                    <div id="p2-runs" class="stats-cell stats-val">-</div>
+                </div>
+                <div class="stats-row">
+                    <div class="stats-cell stats-label">Batting Average</div>
+                    <div id="p1-avg" class="stats-cell stats-val">-</div>
+                    <div id="p2-avg" class="stats-cell stats-val">-</div>
+                </div>
+                <div class="stats-row">
+                    <div class="stats-cell stats-label">Strike Rate</div>
+                    <div id="p1-sr" class="stats-cell stats-val">-</div>
+                    <div id="p2-sr" class="stats-cell stats-val">-</div>
+                </div>
+                <div class="stats-row">
+                    <div class="stats-cell stats-label">100s / 50s</div>
+                    <div id="p1-milestones" class="stats-cell stats-val">-</div>
+                    <div id="p2-milestones" class="stats-cell stats-val">-</div>
+                </div>
+                <div class="stats-row">
+                    <div class="stats-cell stats-label">Innings</div>
+                    <div id="p1-innings" class="stats-cell stats-val">-</div>
+                    <div id="p2-innings" class="stats-cell stats-val">-</div>
+                </div>
             </div>
         </div>
 
-        <div style="margin-top: 40px; background: var(--primary-soft); padding: 30px; border-radius: var(--radius); border: 1px solid var(--primary);">
-            <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: 10px; color: var(--primary);">Expert Analysis</h3>
-            <p style="font-size: 15px; line-height: 1.6;">While Steve Smith leads in volume and average in the Test format, Virat Kohli shows a higher strike rate and conversion in overseas conditions. Smith's dominance in the Ashes remains the primary differentiator in their career stats.</p>
-        </div>
     </div>
 
     <script src="js/api.js"></script>
     <script>
-        async function handleSearch(inputId, cardId) {
+        async function handleSearch(inputId, cardId, prefix) {
             const input = document.getElementById(inputId);
             const card = document.getElementById(cardId);
+            const loader = document.getElementById('page-loader');
             
             input.addEventListener('keydown', async (e) => {
                 if (e.key === 'Enter') {
                     const query = input.value.trim();
                     if (query.length > 2) {
-                        const players = await CricketAPI.searchPlayers(query);
-                        if (players.length > 0) {
-                            const player = players[0];
-                            card.innerHTML = `
-                                <div class="player-img">${player.name.substring(0,2).toUpperCase()}</div>
-                                <div class="player-name">${player.name}</div>
-                                <div class="player-team">${player.country || 'INTERNATIONAL'} • PLAYER</div>
-                            `;
+                        loader.classList.remove('hidden');
+                        card.innerHTML = `<div class="player-img"><i class="ph ph-circle-notch ph-spin"></i></div><div class="player-name">Searching...</div>`;
+                        
+                        try {
+                            const players = await CricketAPI.searchPlayers(query);
+                            if (players && players.length > 0) {
+                                const player = players[0];
+                                card.innerHTML = `
+                                    <div class="player-img">${player.name.substring(0,2).toUpperCase()}</div>
+                                    <div class="player-name">${player.name}</div>
+                                    <div class="player-team">${player.country || 'INTERNATIONAL'} • ${player.role || 'PLAYER'}</div>
+                                `;
+                                
+                                // Update Table
+                                document.getElementById(`${prefix}-header`).innerText = player.name;
+                                document.getElementById(`${prefix}-matches`).innerText = player.matches || 'N/A';
+                                document.getElementById(`${prefix}-runs`).innerText = player.totalRuns || 'N/A';
+                                document.getElementById(`${prefix}-avg`).innerText = player.average || '0';
+                                document.getElementById(`${prefix}-sr`).innerText = player.strikeRate || '0';
+                                document.getElementById(`${prefix}-milestones`).innerText = `${player.hundreds || 0} / ${player.fifties || 0}`;
+                                document.getElementById(`${prefix}-innings`).innerText = player.innings || '0';
+                            }
+                        } catch (err) {
+                            card.innerHTML = `<div class="player-name" style="color: var(--primary);">Working under progress. No data found.</div>`;
+                        } finally {
+                            loader.classList.add('hidden');
                         }
                     }
                 }
             });
         }
 
-        handleSearch('player1-search', 'player1-card');
-        handleSearch('player2-search', 'player2-card');
+        handleSearch('player1-search', 'player1-card', 'p1');
+        handleSearch('player2-search', 'player2-card', 'p2');
     </script>
 </body>
 </html>

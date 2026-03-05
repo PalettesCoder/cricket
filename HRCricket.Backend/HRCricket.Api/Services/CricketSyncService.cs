@@ -32,7 +32,7 @@ namespace HRCricket.Api.Services
                     await SyncAllMatches();
                     await SyncPlayers();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Log error here
                 }
@@ -58,8 +58,11 @@ namespace HRCricket.Api.Services
                 {
                     foreach (var apiMatch in apiResponse.Data)
                     {
+                        var teamA = apiMatch.Teams?.Count > 0 ? apiMatch.Teams[0] : "TBD";
+                        var teamB = apiMatch.Teams?.Count > 1 ? apiMatch.Teams[1] : "TBD";
+
                         var existingMatch = await dbContext.Matches
-                            .FirstOrDefaultAsync(m => m.MatchType == apiMatch.MatchType && m.TeamA == apiMatch.Teams?[0] && m.TeamB == apiMatch.Teams?[1]);
+                            .FirstOrDefaultAsync(m => m.MatchType == apiMatch.MatchType && m.TeamA == teamA && m.TeamB == teamB);
 
                         if (existingMatch == null)
                         {

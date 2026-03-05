@@ -142,4 +142,93 @@ namespace HRCricket.Api.Models
         [JsonPropertyName("matchList")]
         public List<CricApiMatch>? MatchList { get; set; }
     }
+    public class CricApiMatchInfoResponse
+    {
+        [JsonPropertyName("apikey")]
+        public string? ApiKey { get; set; }
+        
+        [JsonPropertyName("data")]
+        public CricApiMatch? Data { get; set; }
+        
+        [JsonPropertyName("status")]
+        public string? Status { get; set; }
+    }
+
+    public class CricScoreResponse
+    {
+        [JsonPropertyName("apikey")]
+        public string? ApiKey { get; set; }
+        
+        [JsonPropertyName("data")]
+        public List<CricScoreData>? Data { get; set; }
+        
+        [JsonPropertyName("status")]
+        public string? Status { get; set; }
+    }
+
+    public class CricScoreData
+    {
+        [JsonPropertyName("id")]
+        public string? Id { get; set; }
+        
+        [JsonPropertyName("dateTimeGMT")]
+        public string? DateTimeGMT { get; set; }
+        
+        [JsonPropertyName("matchType")]
+        public string? MatchType { get; set; }
+        
+        [JsonPropertyName("status")]
+        public string? Status { get; set; }
+        
+        [JsonPropertyName("ms")]
+        public string? MatchStatus { get; set; }
+        
+        [JsonPropertyName("t1")]
+        public string? Team1 { get; set; }
+        
+        [JsonPropertyName("t2")]
+        public string? Team2 { get; set; }
+        
+        [JsonPropertyName("t1s")]
+        public string? Score1 { get; set; }
+        
+        [JsonPropertyName("t2s")]
+        public string? Score2 { get; set; }
+        
+        [JsonPropertyName("t1img")]
+        public string? Team1Img { get; set; }
+        
+        [JsonPropertyName("t2img")]
+        public string? Team2Img { get; set; }
+    }
+
+    public class CricApiNewsResponse
+    {
+        [JsonPropertyName("apikey")]
+        public string? ApiKey { get; set; }
+        
+        [JsonPropertyName("data")]
+        public List<CricApiNews>? Data { get; set; }
+        
+        [JsonPropertyName("status")]
+        public string? Status { get; set; }
+    }
+
+    public class CricApiNews
+    {
+        [JsonPropertyName("id")]
+        public string? Id { get; set; }
+        
+        [JsonPropertyName("title")]
+        public string? Title { get; set; }
+        
+        [JsonPropertyName("story")]
+        public string? Story { get; set; }
+        
+        [JsonPropertyName("image")]
+        public string? Image { get; set; }
+        
+        [JsonPropertyName("pubTime")]
+        public string? PubTime { get; set; }
+    }
 }
