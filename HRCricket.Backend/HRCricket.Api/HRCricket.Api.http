@@ -1,0 +1,6 @@
+@HRCricket.Api_HostAddress = http://localhost:5174
+
+GET {{HRCricket.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

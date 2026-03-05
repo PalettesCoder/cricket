@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Schedule | HR Cricket</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <style>
+        :root {
+            --primary: #DE1F26;
+            --primary-soft: #FFF1F2;
+            --bg: #F4F7F9;
+            --card: #FFFFFF;
+            --text-dark: #121212;
+            --text-gray: #5F6D7A;
+            --border: #E8EDF1;
+            --radius: 12px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-dark);
+        }
+
+        .top-nav {
+            background: #FFFFFF;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .main-nav-links {
+            display: flex;
+            gap: 32px;
+            margin-left: 60px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 15px;
+            padding: 20px 0;
+            position: relative;
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        .content-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        /* Filter Chips */
+        .filter-section {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            scrollbar-width: none;
+        }
+
+        .filter-chip {
+            padding: 8px 20px;
+            background: #FFFFFF;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-gray);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .filter-chip.active {
+            background: var(--primary);
+            color: #FFFFFF;
+            border-color: var(--primary);
+        }
+
+        /* Schedule Grid */
+        .schedule-group {
+            margin-bottom: 40px;
+        }
+
+        .group-date {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .group-date::after {
+            content: '';
+            height: 1px;
+            background: var(--border);
+            flex: 1;
+        }
+
+        .schedule-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 24px;
+            margin-bottom: 16px;
+            display: grid;
+            grid-template-columns: 100px 1fr 150px;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .schedule-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .match-time {
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        .match-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .match-name {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .series-name {
+            font-size: 13px;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        .match-venue {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .match-actions {
+            text-align: right;
+        }
+
+        .btn-remind {
+            background: var(--primary-soft);
+            color: var(--primary);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        @media (max-width: 768px) {
+            .schedule-card {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .match-actions {
+                text-align: left;
+            }
+            .btn-remind {
+                margin-left: 0;
+            }
+            .main-nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-nav">
+        <a href="index.html" class="logo">
+            <i class="ph-fill ph-baseball"></i>
+            HR CRICKET
+        </a>
+        <nav class="main-nav-links">
+            <a href="schedule.html" class="nav-link active">Schedule</a>
+            <a href="stats_center.html" class="nav-link">Live Scores</a>
+            <a href="comparison.html" class="nav-link">Player Comparison</a>
+            <a href="blogs.html" class="nav-link">News & Blogs</a>
+        </nav>
+    </header>
+
+    <div class="content-container">
+        <div class="page-header">
+            <h1>Cricket Schedule</h1>
+            <p style="color: var(--text-gray);">Stay updated with upcoming matches and tournaments.</p>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-chip active">All Matches</div>
+            <div class="filter-chip">International</div>
+            <div class="filter-chip">T20 Leagues</div>
+            <div class="filter-chip">Domestic</div>
+            <div class="filter-chip">Women</div>
+        </div>
+
+        <div id="schedule-container">
+            <div class="schedule-group">
+                <div class="card-body" style="text-align: center; padding: 40px; background: white; border-radius: 12px; border: 1px solid var(--border);">
+                    <p style="color: var(--text-gray);">Fetching latest cricket calendar...</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        async function loadSchedule() {
+            const container = document.getElementById('schedule-container');
+            const schedules = await CricketAPI.getUpcomingSchedules();
+            
+            if (schedules.length > 0) {
+                container.innerHTML = '';
+                
+                // Group by date
+                const groups = schedules.reduce((acc, match) => {
+                    const date = new Date(match.matchTime).toLocaleDateString(undefined, {
+                        weekday: 'long', day: '2-digit', month: 'long'
+                    });
+                    if (!acc[date]) acc[date] = [];
+                    acc[date].push(match);
+                    return acc;
+                }, {});
+
+                Object.keys(groups).forEach(date => {
+                    const groupDiv = document.createElement('div');
+                    groupDiv.className = 'schedule-group';
+                    groupDiv.innerHTML = `<div class="group-date">${date}</div>`;
+                    
+                    groups[date].forEach(match => {
+                        const time = new Date(match.matchTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+                        const card = document.createElement('a');
+                        card.href = '#';
+                        card.className = 'schedule-card';
+                        card.innerHTML = `
+                            <div class="match-time">${time}</div>
+                            <div class="match-details">
+                                <div class="match-name">${match.matchName}</div>
+                                <div class="series-name">${match.series} • ${match.category}</div>
+                                <div class="match-venue">${match.venue}</div>
+                            </div>
+                            <div class="match-actions">
+                                <button class="btn-remind" onclick="showSeriesModal('${match.apiId || 'd7dcef2e-6391-4039-b7b1-15fd3e354432'}'); return false;">
+                                    <i class="ph ph-exam"></i> Series Details
+                                </button>
+                            </div>
+                        `;
+                        groupDiv.appendChild(card);
+                    });
+                    container.appendChild(groupDiv);
+                });
+            } else {
+                container.innerHTML = '<div class="schedule-group"><p style="text-align:center; color: var(--text-gray);">No upcoming matches found in the database.</p></div>';
+            }
+        }
+
+        async function showSeriesModal(apiId) {
+            const modal = document.getElementById('series-modal');
+            modal.style.display = 'flex';
+            
+            document.getElementById('modal-series-name').innerText = "Loading Series Data...";
+            document.getElementById('modal-series-meta').innerText = "";
+            document.getElementById('modal-series-matches').innerHTML = "";
+            
+            const data = await CricketAPI.getSeriesInfo(apiId);
+            
+            if (data && data.info) {
+                document.getElementById('modal-series-name').innerText = data.info.name;
+                document.getElementById('modal-series-meta').innerText = `${data.info.matches} Matches (${data.info.t20} T20s, ${data.info.odi} ODIs, ${data.info.test} Tests)`;
+                
+                const list = document.getElementById('modal-series-matches');
+                list.innerHTML = "";
+                if (data.matchList) {
+                    data.matchList.forEach(m => {
+                        list.innerHTML += `<div style="padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px;"><strong>${m.name}</strong> • ${m.date}</div>`;
+                    });
+                }
+            } else {
+                document.getElementById('modal-series-name').innerText = "Failed to load series info.";
+            }
+        }
+
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelector('.filter-chip.active').classList.remove('active');
+                chip.classList.add('active');
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', loadSchedule);
+    </script>
+    
+    <!-- Series Info Modal -->
+    <div id="series-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 12px; width: 90%; max-width: 600px; padding: 30px; position: relative;">
+            <button onclick="document.getElementById('series-modal').style.display='none'" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+            <span style="background: var(--text-dark); color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold;">TOURNAMENT HUB</span>
+            <h2 id="modal-series-name" style="margin-top: 15px; font-size: 24px; font-weight: 800; line-height: 1.2;">...</h2>
+            <div id="modal-series-meta" style="margin-top: 10px; color: var(--primary); font-size: 14px; font-weight: 700;">
+                ...
+            </div>
+            
+            <div style="margin-top: 25px;">
+                <h3 style="font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid var(--primary); display: inline-block;">All Fixtures</h3>
+                <div id="modal-series-matches" style="max-height: 200px; overflow-y: auto;">
+                    <!-- Injected matched -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -18,16 +18,22 @@
 
     <style>
         :root {
-            --cricket-primary: #1d3557;
-            --cricket-accent: #e63946;
-            --cricket-bg: #0b0d17;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --cricket-primary: #4F46E5;
+            --cricket-accent: #EF4444;
+            --cricket-bg: #F8FAFC;
+            --sidebar-bg: #FFFFFF;
+            --nav-hover: #EEF2FF;
+            --text-dark: #1E293B;
+            --text-gray: #64748B;
+            --border: #E2E8F0;
+            --glass: rgba(255, 255, 255, 0.8);
+            --card-bg: #FFFFFF;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         body {
             background-color: var(--cricket-bg);
-            color: #ffffff;
+            color: var(--text-dark);
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
             margin: 0;
@@ -42,9 +48,8 @@
         /* Sidebar Navigation */
         .cricket-sidebar {
             width: 280px;
-            background: rgba(15, 15, 25, 0.8);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid var(--glass-border);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
             padding: 40px 24px;
             display: flex;
             flex-direction: column;
@@ -54,11 +59,11 @@
         }
 
         .brand-logo {
-            font-family: 'Apfel Grotezk', sans-serif;
+            font-family: 'Outfit', sans-serif;
             font-size: 24px;
             font-weight: 700;
             margin-bottom: 48px;
-            color: #ffffff;
+            color: var(--cricket-primary);
             letter-spacing: -0.5px;
         }
 
@@ -68,7 +73,7 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
         }
 
         .nav-item {
@@ -79,9 +84,9 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 18px;
+            padding: 12px 18px;
             border-radius: 12px;
-            color: #999;
+            color: var(--text-gray);
             text-decoration: none !important;
             font-size: 14px;
             font-weight: 500;
@@ -90,18 +95,18 @@
         }
 
         .nav-link-item:hover, .nav-link-item.active {
-            color: #ffffff;
-            background: var(--glass);
+            color: var(--cricket-primary);
+            background: var(--nav-hover);
         }
 
         .coming-soon-badge {
             font-size: 9px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            background: rgba(255, 255, 255, 0.1);
+            background: #F1F5F9;
             padding: 4px 8px;
             border-radius: 6px;
-            color: rgba(255, 255, 255, 0.4);
+            color: var(--text-gray);
             font-weight: 700;
         }
 
@@ -113,81 +118,87 @@
         }
 
         .hero-section {
-            background: linear-gradient(135deg, rgba(29, 53, 87, 0.4) 0%, rgba(230, 57, 70, 0.1) 100%);
+            background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%);
             border-radius: 32px;
             padding: 80px;
-            border: 1px solid var(--glass-border);
+            border: 1px solid var(--border);
             margin-bottom: 60px;
             position: relative;
             overflow: hidden;
+            box-shadow: var(--shadow);
         }
 
         .hero-title {
-            font-family: 'Apfel Grotezk', sans-serif;
+            font-family: 'Outfit', sans-serif;
             font-size: 56px;
             font-weight: 700;
             max-width: 600px;
             line-height: 1.1;
             margin-bottom: 24px;
+            color: var(--text-dark);
         }
 
         .hero-desc {
             font-size: 18px;
-            color: #999;
+            color: var(--text-gray);
             max-width: 500px;
             line-height: 1.6;
         }
 
         .section-title {
             font-size: 24px;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 32px;
             display: flex;
             align-items: center;
             gap: 12px;
+            color: var(--text-dark);
         }
 
         .section-title::after {
             content: '';
             height: 1px;
-            background: var(--glass-border);
+            background: var(--border);
             flex: 1;
         }
 
         .post-card {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 24px;
-            padding: 24px;
+            padding: 32px;
             transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             height: 100%;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);
         }
 
         .post-card:hover {
             transform: translateY(-8px);
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: var(--cricket-primary);
         }
 
         .post-tag {
             font-size: 12px;
-            font-weight: 600;
-            color: var(--cricket-accent);
+            font-weight: 700;
+            color: var(--cricket-primary);
             text-transform: uppercase;
             margin-bottom: 16px;
             display: inline-block;
+            letter-spacing: 1px;
         }
 
         .post-title {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 22px;
+            font-weight: 700;
             margin-bottom: 12px;
             line-height: 1.4;
+            color: var(--text-dark);
         }
 
         .post-meta {
             font-size: 13px;
-            color: #666;
+            color: var(--text-gray);
             display: flex;
             align-items: center;
             gap: 12px;
@@ -199,22 +210,24 @@
             left: 24px;
             width: 232px;
             padding: 14px;
-            background: #ffffff;
-            color: #000000;
+            background: var(--cricket-primary);
+            color: #ffffff;
             border-radius: 14px;
             text-align: center;
             text-decoration: none !important;
             font-weight: 600;
             font-size: 14px;
-            transition: transform 0.2s;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
         }
 
         .back-to-portfolio:hover {
             transform: scale(1.02);
+            filter: brightness(1.1);
         }
 
         @media (max-width: 991px) {
-            .cricket-sidebar { width: 100%; height: auto; position: relative; padding: 24px; }
+            .cricket-sidebar { width: 100%; height: auto; position: relative; padding: 24px; border-right: none; border-bottom: 1px solid var(--border); }
             .cricket-main { margin-left: 0; padding: 40px 24px; }
             .hero-section { padding: 40px; }
             .hero-title { font-size: 36px; }
@@ -222,6 +235,7 @@
             .back-to-portfolio { position: relative; bottom: 0; left: 0; width: 100%; margin-top: 40px; }
         }
     </style>
+
 </head>
 <body>
 
@@ -237,33 +251,24 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <div class="nav-link-item">
-                        Live Scores
-                        <span class="coming-soon-badge">Soon</span>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <div class="nav-link-item">
-                        Player Stats
-                        <span class="coming-soon-badge">Soon</span>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a href="blogs.html" class="nav-link-item">
-                        News / Blogs
+                    <a href="schedule.html" class="nav-link-item">
+                        Schedule
                     </a>
                 </li>
                 <li class="nav-item">
-                    <div class="nav-link-item">
-                        Tournaments
-                        <span class="coming-soon-badge">Soon</span>
-                    </div>
+                    <a href="stats_center.html" class="nav-link-item">
+                        Live Scores
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <div class="nav-link-item">
-                        Predictions
-                        <span class="coming-soon-badge">Soon</span>
-                    </div>
+                    <a href="comparison.html" class="nav-link-item">
+                        Player Comparison
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="blogs.html" class="nav-link-item">
+                        News & Blogs
+                    </a>
                 </li>
             </ul>
 
@@ -309,6 +314,48 @@
                                 </div>
                             </article>
                         </a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="analysis-preview" style="margin-top: 60px;">
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <h2 class="section-title">Statistical Deep Dives</h2>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="post-card" style="padding: 24px;">
+                                    <div style="font-size: 24px; color: var(--cricket-primary); margin-bottom: 15px;"><i class="ph-fill ph-chart-bar"></i></div>
+                                    <h4 style="font-size: 18px; font-weight: 700;">ICC Rankings</h4>
+                                    <p style="font-size: 14px; color: var(--text-gray);">Live updates on top performing players across all formats.</p>
+                                    <a href="comparison.html" style="color: var(--cricket-primary); font-weight: 700; text-decoration: none; font-size: 13px;">VIEW RANKINGS →</a>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="post-card" style="padding: 24px;">
+                                    <div style="font-size: 24px; color: var(--cricket-accent); margin-bottom: 15px;"><i class="ph-fill ph-users"></i></div>
+                                    <h4 style="font-size: 18px; font-weight: 700;">H2H Comparison</h4>
+                                    <p style="font-size: 14px; color: var(--text-gray);">Compare Virat vs Smith, Rohit vs Warner and more.</p>
+                                    <a href="comparison.html" style="color: var(--cricket-primary); font-weight: 700; text-decoration: none; font-size: 13px;">START COMPARISON →</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <h2 class="section-title">Next Matches</h2>
+                        <div class="post-card" style="padding: 20px;">
+                            <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
+                                <div style="font-size: 11px; font-weight: 800; color: var(--cricket-accent);">TODAY • 19:30</div>
+                                <div style="font-weight: 700; margin: 5px 0;">GT vs DC</div>
+                                <div style="font-size: 12px; color: var(--text-gray);">IPL 2026 • Match 42</div>
+                            </div>
+                            <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
+                                <div style="font-size: 11px; font-weight: 800; color: var(--text-gray);">TOMORROW • 15:30</div>
+                                <div style="font-weight: 700; margin: 5px 0;">MI vs RCB</div>
+                                <div style="font-size: 12px; color: var(--text-gray);">IPL 2026 • Match 43</div>
+                            </div>
+                            <a href="schedule.html" style="color: var(--cricket-primary); font-weight: 700; text-decoration: none; font-size: 13px; display: block; text-align: center;">FULL SCHEDULE →</a>
+                        </div>
                     </div>
                 </div>
             </section>
